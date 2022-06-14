@@ -38,7 +38,7 @@ class AddressPageState extends State<AddressPage> {
             width: MediaQuery.of(context).size.width,
             color: Color(0xDF290505),
             child: Column(children: [
-              const Text("33 кофейни за 3 года!",
+              const Text("33 кофейни за 4 года!",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -108,34 +108,40 @@ class AddressPageState extends State<AddressPage> {
                                 shrinkWrap: true,
                                 itemCount: snapshot.data[index]["address"].length,
                                   itemBuilder: (context, int ind){
-                                  return RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                      children: [
-                                        WidgetSpan(
-                                          child:  Icon(Icons.arrow_right,color: Colors.black,),
-                                        ),
-                                        TextSpan(text: '${snapshot.data[index]["address"][ind]["place"]} ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                              fontSize: 14,
+                                  return Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: RichText(
+                                      textAlign: TextAlign.start,
+                                      text: TextSpan(
+                                        children: [
+                                          WidgetSpan(
+                                            child:  Padding(
+                                              padding: EdgeInsets.all(4.0),
+                                              child: Icon(Icons.circle, size: 10, color: Color(0xDF290505),
+                                              ),),
+                                          ),
+                                          TextSpan(text: '${snapshot.data[index]["address"][ind]["place"]} ',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                                fontSize: 14,
 
-                                            )),
-                                        TextSpan(text: '${snapshot.data[index]["address"][ind]["address"]} ',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14,
+                                              )),
+                                          TextSpan(text: '${snapshot.data[index]["address"][ind]["address"]} ',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 14,
 
-                                            )),
-                                        TextSpan(text: '(${snapshot.data[index]["address"][ind]["hoursWorking"]})',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14,
+                                              )),
+                                          TextSpan(text: '(${snapshot.data[index]["address"][ind]["hoursWorking"]})',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 14,
 
-                                            )),
+                                              )),
 
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   );
                                   },),

@@ -8,7 +8,13 @@ enum Item {
   feedback,
   franchise,
   ourProduct,
-  shoppingCart
+  shoppingCart,
+  itemDetail,
+  profile,
+  login,
+  registr,
+  orders,
+  order
 }
 
 class MenuService {

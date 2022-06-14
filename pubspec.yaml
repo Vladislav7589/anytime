@@ -25,7 +25,9 @@ dependencies:
   url_launcher: ^6.0.9
   fluttertoast: ^8.0.9
   http: ^0.13.0-nullsafety
-
+  intl: ^0.17.0
+  carousel_slider: ^4.0.0
+  date_format: ^2.0.2
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -57,6 +59,7 @@ flutter:
     - assets/
     - assets/icons/
     - assets/school/
+    - assets/vacancy_image/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

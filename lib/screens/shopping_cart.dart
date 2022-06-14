@@ -1,6 +1,10 @@
 import 'dart:convert';
 
+import 'package:any_time/screens/menu.dart';
+import 'package:any_time/utils.dart';
+import 'package:any_time/widgets/dialog_addeses.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -10,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
 import '../globals.dart';
+import 'loginPage.dart';
 
 class ShoppingCartPage extends StatefulWidget {
   @override
@@ -17,12 +22,12 @@ class ShoppingCartPage extends StatefulWidget {
 }
 
 class ShoppingCartPageState extends State<ShoppingCartPage> {
-
   MenuService menuService = MenuService();
   bool isSwitched = false;
-
+  late Enum ready;
+  late String value;
   Future fetchData() async {
-    Uri url = Uri.parse("http://192.168.0.105:1337/menu");
+    Uri url = Uri.parse("http://192.168.0.105:1337/menu-2-s");
     var response = await http.get(url);
     var body = json.decode(response.body);
     return body;
@@ -34,10 +39,12 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+
+    if(!korzina.isEmpty) {
+      return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView(
+        child:  ListView(
           children: [
             IconButton(
               alignment: Alignment.centerLeft,
@@ -112,7 +119,7 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
                                                ClipRRect(
                                                       borderRadius: BorderRadius.circular(15.0),
                                                       child: Image.network(
-                                                          "http://192.168.0.105:1337${snapshot.data["type2"][korzina[index].typeId]["product"][korzina[index].productId]["image"]["url"]}")),
+                                                          "http://192.168.0.105:1337${snapshot.data[korzina[index].typeId]["item"][korzina[index].productId]["image"]["url"]}")),
 
                                               Expanded(
                                                 child:Padding(
@@ -126,13 +133,13 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
                                                               mainAxisAlignment : MainAxisAlignment.center,
                                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                               children: [
-                                                                Text("${snapshot.data["type2"][korzina[index].typeId]["product"][korzina[index].productId]["name"]}",
+                                                                Text("${snapshot.data[korzina[index].typeId]["item"][korzina[index].productId]["name"]}",
                                                                         textAlign: TextAlign.start,
                                                                         style: const TextStyle(
 
                                                                             color: Color(0xDF290505),
                                                                             fontSize: 15.0)),
-                                                                Text("${snapshot.data["type2"][korzina[index].typeId]["product"][korzina[index].productId]["grams"]}",
+                                                                Text("${korzina[index].grams}",
                                                                     textAlign: TextAlign.start,
                                                                     style: const TextStyle(
 
@@ -143,7 +150,7 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
                                                           ),
                                                           Expanded(
                                                             flex:2,
-                                                            child: Text("${korzina[index].count * 69} р.",textAlign: TextAlign.center,
+                                                            child: Text("${korzina[index].count * korzina[index].price} р.",textAlign: TextAlign.center,
                                                                 style: const TextStyle(
                                                                     color: Color(0xDF290505),
                                                                     fontWeight:  FontWeight.bold,
@@ -216,10 +223,7 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
                             },
 
                         ),
-                      )
-
-
-                  ;
+                      );
 
                 }
               },
@@ -237,11 +241,27 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
                       color: Color(0xDF290505),
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold)),
-            Text('Красный путь 11/1',
+            SizedBox(height: 10,),
+            TextButton(onPressed: (){
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        contentPadding : EdgeInsets.all(8),
+                      title: Text('Выберите кофейню:'),
+                      content: SetupAlertDialoadt(context),
+                    );
+                  }).then((_)=>setState((){}));
+
+            }, child: address != ""? Text(address,
                 style: TextStyle(
-                  color: Colors.red,
+                    color: Colors.red,
                     fontSize: 20.0,
-                    fontWeight: FontWeight.bold)),
+                    fontWeight: FontWeight.bold)): Text("Выбрать", style: TextStyle(
+                color: Colors.red,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold))),
+              
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -256,8 +276,10 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
                   value: isSwitched,
                   onChanged: (value){
                     setState(() {
+
                       isSwitched=value;
                       print(isSwitched);
+
                     });
                   },
                   activeTrackColor: Colors.brown,
@@ -269,8 +291,26 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
               padding: const EdgeInsets.only(right: 20,left: 20),
               child: RaisedButton(
                 color: Color(0xB0290505),
-                onPressed: () {
+                onPressed: () async {
+                  String infoJson = jsonEncode(korzina);
+                  print(infoJson);
+                  if(isLogin){
+                    http.Response response = await newOrders(address, infoJson,  email, "prepared", isSwitched);
+                    if (response.statusCode == 200) {
+                      print("Good");
+                      korzina.clear();
+                      setState(() {
 
+                      });
+                      Fluttertoast.showToast(msg: 'Заказ сформирован! \n Посмотреть его статус можно в профиле.', timeInSecForIosWeb: 6,fontSize:18);
+
+                    } else {
+                      print("Not Good ${ response.statusCode}");
+                    }
+                  } else{
+                    Fluttertoast.showToast(msg: 'Вы должны быть авторизованы!', timeInSecForIosWeb: 4);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                  }
                 },
                 child:  Text("Оформить заказ на $total р",textAlign: TextAlign.right,style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
               ),
@@ -279,6 +319,52 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
         ),
       ),
     );
+    } else {
+      return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child:  ListView(
+          children: [
+            IconButton(
+              alignment: Alignment.centerLeft,
+              icon: Icon(Icons.arrow_back, color: Color(0xFF545D68)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children:  [
+                Text('Корзина',
+                    style: TextStyle(
+                        color: Color(0xDF290505),
+                        fontSize: 40.0,
+                        fontWeight: FontWeight.bold)),
+              ],
+            ),
+            Column(children: [
+              Icon(Icons.shopping_cart,size: MediaQuery.of(context).size.width * 0.75,color: Colors.black26,),
+              Text("Корзина пуста",style: TextStyle(fontSize: 35),),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 20,left: 20),
+                  child: RaisedButton(
+                    color: Color(0xB0290505),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MenuPage()));
+                      setState(() {
+                        menuService.currentPage = Item.menu;
+                      });
+                    },
+                    child:  Text("Перейти в меню",textAlign: TextAlign.right,style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
+                  ),
+                ),
+              ),
+            ],)
+          ],
+        ),
+      ),
+    );
+    }
   }
 }
-

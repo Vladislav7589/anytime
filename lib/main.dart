@@ -5,8 +5,10 @@ import 'package:any_time/screens/address.dart';
 import 'package:any_time/screens/coffee.dart';
 import 'package:any_time/screens/feedback.dart';
 import 'package:any_time/screens/franchise.dart';
+import 'package:any_time/screens/loginPage.dart';
 import 'package:any_time/screens/menu.dart';
 import 'package:any_time/screens/our_product.dart';
+import 'package:any_time/screens/profile.dart';
 import 'package:any_time/screens/school.dart';
 import 'package:any_time/screens/shopping_cart.dart';
 import 'package:any_time/screens/team.dart';
@@ -52,7 +54,6 @@ class _MainPageState extends State<Main> with SingleTickerProviderStateMixin {
   MenuService menuService = MenuService();
   late AnimationController animationController;
   late Animation<double> animation;
-  List<Basket> korzina = [];
 
 
   @override
@@ -60,7 +61,7 @@ class _MainPageState extends State<Main> with SingleTickerProviderStateMixin {
     super.initState();
     menuService.currentPage = Item.menu;
   }
-  void _onItemTap(int index) {
+  void onItemTap(int index) {
     setState(() {
       selectedIndex = index;
       switch(selectedIndex){
@@ -81,8 +82,10 @@ class _MainPageState extends State<Main> with SingleTickerProviderStateMixin {
           }
           break;
         case 2:
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ShoppingCartPage()));
-          break;
+          if (menuService.currentPage != Item.shoppingCart) {
+            menuService.currentPage = Item.shoppingCart;
+            _globalKey.currentState!.push(MaterialPageRoute(builder: (context) => ShoppingCartPage()));
+          }
       }
     });
   }
@@ -102,26 +105,23 @@ class _MainPageState extends State<Main> with SingleTickerProviderStateMixin {
           ),
         ),
         actions: [
-          Container(
-            width: 90,
-            child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-
-                  Icon(Icons.shopping_cart),
-                  Positioned(
-                    left: 45,
-                    top: 1,
-                    child: Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.red,),
-
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 1.5, 4, 1.5),
-                          child: Text("$total р",style: TextStyle(color: Colors.white,fontSize: 10,fontWeight: FontWeight.bold),),
-                        )),
-                  )
-
-                ]
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Container(
+              child: IconButton(
+                splashRadius: 1,
+                icon: Icon( Icons.account_circle_rounded,size: 35,color: Colors.white, ),
+                onPressed: () {
+                  print( isLogin);
+                  if (menuService.currentPage != Item.profile && isLogin) {
+                    menuService.currentPage = Item.profile;
+                    _globalKey.currentState!.push(MaterialPageRoute(builder: (context) => ProfilePage()));
+                  }
+                  if (menuService.currentPage != Item.login && !isLogin) {
+                    menuService.currentPage = Item.login;
+                    _globalKey.currentState!.push(MaterialPageRoute(builder: (context) =>  LoginPage()));
+                  }
+              },),
             ),
           ),
         ],
@@ -182,7 +182,7 @@ class _MainPageState extends State<Main> with SingleTickerProviderStateMixin {
         selectedItemColor: Color(0xDF290505),
         selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
         currentIndex: selectedIndex,
-        onTap: _onItemTap,
+        onTap: onItemTap,
         selectedFontSize: 15.0,
         unselectedFontSize: 13.0,
         items: [
