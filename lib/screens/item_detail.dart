@@ -81,12 +81,10 @@ class ItemDetailState extends  State<ItemDetail> {
                           fit: BoxFit.cover,
                       ),
                     ),
-                    Row(
-                      children: [
-                        Padding(
+                    Padding(
                           padding: const EdgeInsets.all(10),
                           child: Text("${widget.name}",
-                              textAlign: TextAlign.start,
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xDF290505),
@@ -94,8 +92,7 @@ class ItemDetailState extends  State<ItemDetail> {
 
                               )),
                         ),
-                      ],
-                    ),
+
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Center(

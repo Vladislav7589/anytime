@@ -101,9 +101,8 @@ class OrdersPageState extends State<OrdersPage> {
                                         color: Colors.white),
                                     child: InkWell(
                                       onTap: (){
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => OrderPage(id: snapshot.data[index]["id"],
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => OrderPage(id: snapshot.data[index]["id"],)));
 
-                                           )));
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(14.0),
@@ -156,6 +155,15 @@ class OrdersPageState extends State<OrdersPage> {
                                                       color: Color(0xDF290505),
                                                       fontSize: 18
                                                   )),
+                                              SizedBox(height: 8,),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text("Итого:",style: TextStyle(fontSize: 20),),
+                                                  Text("${snapshot.data[index]["total"]}  р",style: TextStyle(fontSize: 20),),
+                                                ],
+                                              ),
+
                                         ]),
                                       ),
                                     )),

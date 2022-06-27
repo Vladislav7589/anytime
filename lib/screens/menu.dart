@@ -138,20 +138,19 @@ class MenuPageState extends State<MenuPage> with SingleTickerProviderStateMixin 
 
                                       },
                                       child: Column(children: [
-                                        Expanded(
-                                            flex: 9,
-                                            child: ClipRRect(
+                                         ClipRRect(
                                                 borderRadius: BorderRadius.circular(15.0),
-                                                child: Image.network("http://192.168.0.105:1337${snapshot.data[ind]["item"][index]["image"]["url"]}"))
+                                                child: Image.network("http://192.168.0.105:1337${snapshot.data[ind]["item"][index]["image"]["url"]}")),
 
 
-                                        ),
+
                                         Expanded(
-                                          flex: 1,
+                                          flex: 2,
                                           child: Text("${snapshot.data[ind]["item"][index]["name"]}",
                                               textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
                                               style: const TextStyle(
-
                                                   color: Color(0xFF575E67),
                                                   fontSize: 15.0)),
                                         ),

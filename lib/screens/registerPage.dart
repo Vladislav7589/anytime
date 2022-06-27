@@ -21,6 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController numberController = TextEditingController();
+  TextEditingController secondPasswordController = TextEditingController();
 
   @override
   void dispose() {
@@ -118,6 +119,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    obscureText: true,
                     controller: passwordController,
                     keyboardType: TextInputType.visiblePassword,
                     decoration: InputDecoration(
@@ -130,6 +132,24 @@ class _RegisterPageState extends State<RegisterPage> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0)),
                       labelText: 'Пароль',labelStyle: TextStyle(color: Colors.black),),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    obscureText: true,
+                    controller: secondPasswordController,
+                    keyboardType: TextInputType.visiblePassword,
+                    decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color(0xDF290505),
+                              width: 2.0),
+                          borderRadius: BorderRadius.circular(10.0)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      labelText: 'Повторите пароль',labelStyle: TextStyle(color: Colors.black),),
                   ),
                 ),
                 ElevatedButton(
@@ -167,6 +187,12 @@ class _RegisterPageState extends State<RegisterPage> {
                               timeInSecForIosWeb: 2);
                         }
                       }
+                    } else if(passwordController.text != secondPasswordController.text){
+
+                      secondPasswordController.text='';
+                      passwordController.text='';
+                      Fluttertoast.showToast(
+                          msg: 'Пароли не совпадают!', timeInSecForIosWeb: 2);
                     } else {
                       Fluttertoast.showToast(
                           msg: 'Заполните все поля!', timeInSecForIosWeb: 2);

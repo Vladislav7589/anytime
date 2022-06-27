@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'item_detail.dart';
 
 class OrderPage extends StatefulWidget {
-  final int id;
+   int id;
   OrderPage({
     required this.id,
   });
@@ -24,13 +24,20 @@ class OrderPageState extends State<OrderPage> {
   MenuService menuService = MenuService();
   int ind = 0;
   late String status;
-  late String order;
+  var order;
 
   Future fetchData() async {
     Uri url = Uri.parse("http://192.168.0.105:1337/orders?id=${widget.id}");
     var response = await http.get(url);
     var body = json.decode(response.body);
-    print(body);
+    //order = json.decode(body["order"]);
+    //print(order);
+    return body;
+  }
+  Future fetchData2() async {
+    Uri url = Uri.parse("http://192.168.0.105:1337/menu-2-s");
+    var response = await http.get(url);
+    var body = json.decode(response.body);
     return body;
   }
 
@@ -76,15 +83,6 @@ class OrderPageState extends State<OrderPage> {
           FutureBuilder(
             future: fetchData(),
             builder: (context, AsyncSnapshot snapshot) {
-              status ="";
-              print(snapshot.data[0]["order"].length);
-              switch(snapshot.data[0]["status"]){
-                case "prepared": status ="Готовится"; break;
-                case "ready": status ="Готов"; break;
-                case "issued": status ="Готов к выдаче"; break;
-                default:break;
-              }
-
               if (snapshot.data == null) {
                 return Container(
                     child: Center(
@@ -93,10 +91,19 @@ class OrderPageState extends State<OrderPage> {
               } else if (snapshot.hasError) {
                 return Center(child: Text(snapshot.error.toString()));
               } else {
+                order = json.decode(snapshot.data[0]["order"]);
+                print(order);
+                status ="";
+                switch(snapshot.data[0]["status"]){
+                  case "prepared": status ="Готовится"; break;
+                  case "ready": status ="Готов"; break;
+                  case "issued": status ="Готов к выдаче"; break;
+                  default:break;
+                }
                 return  Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(14.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Column(crossAxisAlignment : CrossAxisAlignment.start,
                           children: [
                             Row(
@@ -146,6 +153,13 @@ class OrderPageState extends State<OrderPage> {
                                     color: Color(0xDF290505),
                                     fontSize: 18
                                 )),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("Итого:",style: TextStyle(fontSize: 20),),
+                                Text("${snapshot.data[0]["total"]}  р.",style: TextStyle(fontSize: 20),),
+                              ],
+                            ),
                           ]),
                     ),
 
@@ -155,6 +169,110 @@ class OrderPageState extends State<OrderPage> {
 
               }
             },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FutureBuilder(
+              future: fetchData2(),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.data == null) {
+                  return Container(
+                      child: Center(
+                        child: CircularProgressIndicator(color: Color(0xDF290505),),
+                      ));
+                } else if (snapshot.hasError) {
+                  return Center(child: Text(snapshot.error.toString()));
+                } else {
+                  return Container(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: order.length,
+                      primary: false,
+                      itemBuilder: (BuildContext context, int index) {
+                        return  Padding(
+                          padding: const EdgeInsets.only(bottom: 5,top: 5),
+                          child: Center(
+                            child:  Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 3.0,
+                                        blurRadius: 5.0)
+                                  ],
+                                  color: Colors.white),
+                              child:  Container(
+                                height: 80,
+                                child: Row(children: [
+                                  ClipRRect(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      child: Image.network(
+                                          "http://192.168.0.105:1337${snapshot.data[order[index]["typeId"]]["item"][order[index]["productId"]]["image"]["url"]}")),
+
+                                  Expanded(
+                                    child:Padding(
+                                      padding: const EdgeInsets.only(right: 8,left: 8),
+                                      child: Row(
+                                        mainAxisAlignment : MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            flex:5,
+                                            child: Column(
+                                              mainAxisAlignment : MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text("${snapshot.data[order[index]["typeId"]]["item"][order[index]["productId"]]["name"]}",
+                                                    textAlign: TextAlign.start,
+                                                    style: const TextStyle(
+
+                                                        color: Color(0xDF290505),
+                                                        fontSize: 15.0)),
+                                                Text("${order[index]["grams"]}",
+                                                    textAlign: TextAlign.start,
+                                                    style: const TextStyle(
+
+                                                        color: Color(0xFF575E67),
+                                                        fontSize: 12.0)),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex:2,
+                                            child: Text("${order[index]["count"]} x ${order[index]["price"]} р.",textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                    color: Color(0xDF290505),
+                                                    fontWeight:  FontWeight.bold,
+                                                    fontSize: 14.0)),
+                                          ),
+                                          Expanded(
+                                            flex:2,
+                                            child: Text("${order[index]["count"]*order[index]["price"]}",textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                    color: Color(0xDF290505),
+                                                    fontWeight:  FontWeight.bold,
+                                                    fontSize: 14.0)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+
+                                  ),
+                                ]),
+                              ),
+                            ),
+
+                          ),
+                        );
+                      },
+
+                    ),
+                  );
+
+                }
+              },
+            ),
           ),
 
         ]),

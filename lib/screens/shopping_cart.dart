@@ -133,8 +133,10 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
                                                               mainAxisAlignment : MainAxisAlignment.center,
                                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                               children: [
+
                                                                 Text("${snapshot.data[korzina[index].typeId]["item"][korzina[index].productId]["name"]}",
                                                                         textAlign: TextAlign.start,
+
                                                                         style: const TextStyle(
 
                                                                             color: Color(0xDF290505),
@@ -295,10 +297,11 @@ class ShoppingCartPageState extends State<ShoppingCartPage> {
                   String infoJson = jsonEncode(korzina);
                   print(infoJson);
                   if(isLogin){
-                    http.Response response = await newOrders(address, infoJson,  email, "prepared", isSwitched);
+                    http.Response response = await newOrders(address, infoJson,  email, "prepared", isSwitched, total);
                     if (response.statusCode == 200) {
                       print("Good");
                       korzina.clear();
+                      KorzinaPrica();
                       setState(() {
 
                       });
